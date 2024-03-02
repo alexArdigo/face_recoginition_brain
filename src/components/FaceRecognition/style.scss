@@ -1,4 +1,19 @@
-.Nav {
+.FaceRecognition {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  padding-top: 20px;
+
+  img {
+    width: 500px;
+    height: auto;
+  }
+
+  .bounding-box {
+    position: absolute;
+    box-shadow: 0 0 0 3px white inset;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    cursor: pointer;;
+  }
 }

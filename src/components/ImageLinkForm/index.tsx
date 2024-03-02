@@ -1,13 +1,15 @@
 import "./style.scss";
+import React from "react";
+
 
 type Props = {
-    onInputChange: void
-    onSubmit: void
+    onInputChange: (event: React.FormEvent<HTMLInputElement>) => void
+    onSubmit: (event: React.FormEvent<HTMLInputElement>) => void
 }
 
 const ImageLinkForm = ({onInputChange, onSubmit}: Props) => {
     return (
-        <div className="wrapper">
+        <div className="ImageLinkForm">
             <p className="f3">
                 {"This Magic Brain will detect faces in your pictures. Give it a try"}
             </p>
@@ -19,7 +21,7 @@ const ImageLinkForm = ({onInputChange, onSubmit}: Props) => {
                 />
                 <button
                     className="grow f4  link ph3 pv2 dib white bg-light-purple"
-                    onClick={onSubmit}
+                    onClick={() => onSubmit()}
                 >Detect
                 </button>
             </div>

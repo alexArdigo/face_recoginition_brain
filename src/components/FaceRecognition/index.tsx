@@ -1,10 +1,35 @@
 import "./style.scss"
-import React from "react";
+import {CalculatedBoardingBox, Image} from "../../App.tsx";
+import {RefObject} from "react";
 
-const FaceRecognition: React.FC = () => {
+
+type Props = {
+    image: Image
+    imageRef: RefObject<HTMLImageElement>
+    boxes: CalculatedBoardingBox[]
+}
+
+const FaceRecognition = ({image, imageRef, boxes}: Props) => {
+
+
+    console.log(boxes);
     return (
-        <div className="center">
-            <img src={'https://samples.clarifai.com/metro-north.jpg'} alt={""} />
+        <div className="FaceRecognition">
+            <div className="absolute mt2">
+                <img ref={imageRef} src={image.IMAGE_URL} alt={""} />
+                {boxes && boxes?.map(box => {
+                    return <div
+                        key={box?.topRow}
+                        className="bounding-box"
+                        style={{
+                            top: box?.topRow,
+                            left: box?.leftCol,
+                            bottom: box?.bottomRow,
+                            right: box?.rightCol,
+                        }}
+                    ></div>
+                })}
+            </div>
 
         </div>
     );

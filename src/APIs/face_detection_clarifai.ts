@@ -1,13 +1,16 @@
-import {Image} from "../App.tsx";
+export interface IData {
+    topRow: string;
+    leftCol: string;
+    bottomRow: string;
+    rightCol: string;
+}
 
-
-
-export const fetchFaceDetectionAPI = (IMAGE_URL: Image) => {
+export const fetchFaceDetectionAPI = async (IMAGE_URL: string) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // In this section, we set the user authentication, user and app ID, model details, and the URL
 // of the image we want as an input. Change these strings to run your own example.
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+    console.log(IMAGE_URL);
 // Your PAT (Personal Access Token) can be found in the portal under Authentification
     const PAT = '140e44f5144e4d099efcab3435a51ec3';
 // Specify the correct user_id/app_id pairings
@@ -77,12 +80,15 @@ export const fetchFaceDetectionAPI = (IMAGE_URL: Image) => {
     }
 
 
-    return fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
+
+    const data: Array<IData> = [];
+
+    await fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
         .then(response => response.json())
         .then(result => {
-
             const regions = result.outputs[0].data.regions;
 
+            console.log(regions);
             regions.forEach((region: Region) => {
                 // Accessing and rounding the bounding box values
                 const boundingBox = region.region_info.bounding_box;
@@ -91,17 +97,18 @@ export const fetchFaceDetectionAPI = (IMAGE_URL: Image) => {
                 const bottomRow = boundingBox.bottom_row.toFixed(3);
                 const rightCol = boundingBox.right_col.toFixed(3);
 
-                region.data.concepts.forEach((concept: Concept) => {
-                    // Accessing and rounding the concept value
-                    const name = concept.name;
-                    const value = concept.value.toFixed(4);
-
-                    console.log(`${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`);
-
+                data.push({
+                    topRow,
+                    leftCol,
+                    bottomRow,
+                    rightCol,
                 });
             });
 
         })
         .catch(error => console.log('error', error));
+
+    return data;
+
 };
 
