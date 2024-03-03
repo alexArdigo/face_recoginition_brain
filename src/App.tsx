@@ -1,12 +1,13 @@
 import './App.css';
-import Navigation from "./components/Navigation";
 import Logo from "./components/Logo";
-import ImageLinkForm from "./components/ImageLinkForm";
-import Rank from "./components/Rank";
 import ParticlesBg from 'particles-bg';
 import React, {useRef, useState} from "react";
 import {fetchFaceDetectionAPI} from "./APIs/face_detection_clarifai.ts";
-import FaceRecognition from "./components/FaceRecognition";
+import {Route, Routes, useLocation} from "react-router-dom";
+import Home from "./components/Home";
+import Register from "./components/Register";
+import SignOut from "./components/SignOut";
+import SignIn from "./components/SignIn";
 
 export type Image = {
     IMAGE_URL: string
@@ -32,6 +33,7 @@ function App() {
     const boardingBoxRef = useRef<BoardingBox[]>([]);
     const imageRef = useRef<HTMLImageElement | null>(null);
     const [boxes, setBoxes] = useState<CalculatedBoardingBox[]>([]);
+    const location = useLocation()
 
     const name: string = "Alex";
     const rank: number = 0;
@@ -42,7 +44,7 @@ function App() {
 
     const onSubmit = async () => {
         boardingBoxRef.current = await fetchFaceDetectionAPI(userInput.IMAGE_URL);
-        const calculatedBoxes: CalculatedBoardingBox[] = calculateBoxArea()
+        const calculatedBoxes: CalculatedBoardingBox[] = calculateBoxArea();
         setBoxes([...calculatedBoxes]);
     };
 
@@ -58,8 +60,7 @@ function App() {
             };
         });
 
-    }
-
+    };
 
 
     return (
@@ -71,18 +72,28 @@ function App() {
                 num={100}
 
             />
-            <Navigation/>
+            {location.pathname === "/" && <SignOut/>}
             <Logo/>
-            <Rank name={name} rank={rank}/>
-            <ImageLinkForm
-                onInputChange={onInputChange}
-                onSubmit={onSubmit}
-            />
-            <FaceRecognition
-                image={userInput}
-                imageRef={imageRef}
-                boxes={boxes}
-            />
+            <Routes>
+                <Route path={"/sign-in"} element={<SignIn/>}/>
+                <Route path={"/register"} element={<Register/>}/>
+                <Route
+                    path={"/"}
+                    element={
+                        <Home
+                            boxes={boxes}
+                            name={name}
+                            rank={rank}
+                            onInputChange={onInputChange}
+                            onSubmit={onSubmit}
+                            userInput={userInput}
+                            imageRef={imageRef}
+                        />
+                    }
+                />
+            </Routes>
+
+
         </div>
     );
 }
