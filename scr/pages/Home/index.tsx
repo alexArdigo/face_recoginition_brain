@@ -1,16 +1,16 @@
 import "./style.scss";
-import Rank from "../Rank";
-import ImageLinkForm from "../ImageLinkForm";
-import FaceRecognition from "../FaceRecognition";
-import React, {FormEvent} from "react";
+import Rank from "../../components/Rank/index.tsx";
+import ImageLinkForm from "../../components/ImageLinkForm/index.tsx";
+import FaceRecognition from "../../components/FaceRecognition/index.tsx";
+import React, {ChangeEvent} from "react";
 import {CalculatedBoardingBox, Image} from "../../App.tsx";
 
 type Props = {
     boxes:  CalculatedBoardingBox[]
     name: string
     rank: number
-    onInputChange: (event: FormEvent<HTMLInputElement>) => void
-    onSubmit:  (event: FormEvent<HTMLInputElement>) => void
+    onInputChange: (event: ChangeEvent<HTMLInputElement>) => void
+    onSubmit:  () => Promise<void>;
     userInput: Image
     imageRef:  React.MutableRefObject<HTMLImageElement | null>
 }
