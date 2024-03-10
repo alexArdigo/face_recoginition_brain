@@ -1,10 +1,10 @@
 import "./style.scss";
-import React from "react";
+import React, {MouseEventHandler} from "react";
 
 
 type Props = {
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-    onSubmit: () => Promise<void>;
+    onSubmit: MouseEventHandler<HTMLButtonElement> | undefined
 }
 
 const ImageLinkForm = ({onInputChange, onSubmit}: Props) => {
@@ -21,7 +21,7 @@ const ImageLinkForm = ({onInputChange, onSubmit}: Props) => {
                 />
                 <button
                     className="grow f4  link ph3 pv2 dib white bg-light-purple"
-                    onClick={() => onSubmit()}
+                    onClick={onSubmit}
                 >Detect
                 </button>
             </div>
