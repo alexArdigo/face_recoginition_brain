@@ -1,57 +1,33 @@
 import './App.css';
 import Logo from "./components/Logo";
 import ParticlesBg from 'particles-bg';
-import React, {useRef, useState} from "react";
-import {fetchFaceDetectionAPI} from "./APIs/face_detection_clarifai.ts";
-import {Route, Routes} from "react-router-dom";
+import React, {useContext, useRef, useState} from "react";
+import {fetchFaceDetectionAPI} from "./APIs/ClarifaiFaceDetection";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import SignOut from "./components/SignOut";
 import SignIn from "./pages/SignIn";
+import { Image, UserType, CalculatedBoardingBox, BoardingBox} from "./types";
+import {fetchPutImage} from "./utils/FetchPutImage";
+import {UserContext} from "./utils/UserContext";
 
-/// TYPES
-export type Image = {
-    IMAGE_URL: string
-}
 
-type BoardingBox = {
-    topRow?: string
-    leftCol?: string
-    bottomRow?: string
-    rightCol?: string
-} | undefined
-
-export type CalculatedBoardingBox = {
-    topRow?: number
-    leftCol?: number
-    bottomRow?: number
-    rightCol?: number
-} | undefined
-
-export type UserType = {
-    id: number
-    name: string
-    email: string
-    password: string
-    entries: number
-    joined: string
-}
-
-//// REACT
 function App() {
     const [userInput, setUserInput] = useState<Image>({IMAGE_URL: ""});
     const boardingBoxRef = useRef<BoardingBox[]>([]);
     const imageRef = useRef<HTMLImageElement | null>(null);
     const [boxes, setBoxes] = useState<CalculatedBoardingBox[]>([]);
-    const [user, setUser] = useState<UserType>({
+    const {getUserId} = useContext(UserContext);
+    const initialState: UserType = {
         id: 0,
         name: '',
         email: '',
-        password: '',
         entries: 0,
         joined: '',
 
-    });
+    }
+    const [user, setUser] = useState<UserType>(initialState);
 
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setUserInput({IMAGE_URL: event.target.value});
@@ -63,16 +39,8 @@ function App() {
         setBoxes([...calculatedBoxes]);
 
         if (user) {
-            fetch('http://localhost:3000/image', {
-                method: "PUT",
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: user.id
-                })
-            }).then(response => response.json())
-                .then(data => setUser(prevState => ({...prevState, entries: data})));
+            const data = await fetchPutImage(user.id)
+            return setUser(prevState => ({...prevState, entries: data.entries}))
         }
     };
 
@@ -87,17 +55,16 @@ function App() {
                 rightCol: width ? width - (Number(box?.rightCol) * width) : undefined,
             };
         });
-
     };
 
-    const loadUser = (user: UserType) => {
+    const loadUser = async (userLoaded: UserType) => {
+        getUserId(userLoaded.id)
         return setUser({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            entries: user.entries,
-            joined: user.joined,
+            id: userLoaded.id,
+            name: userLoaded.name,
+            email: userLoaded.email,
+            entries: userLoaded.entries,
+            joined: userLoaded.joined,
         });
     };
 
@@ -110,7 +77,7 @@ function App() {
                 num={100}
 
             />
-            <SignOut/>
+            <SignOut setUser={setUser} initialState={initialState} setUserInput={setUserInput}/>
             <Logo/>
             <Routes>
                 <Route
@@ -129,7 +96,7 @@ function App() {
                         />
                     }/>
                 <Route
-                    path={"/"}
+                    path={"/home"}
                     element={
                         <Home
                             boxes={boxes}
@@ -142,9 +109,11 @@ function App() {
                         />
                     }
                 />
+                <Route
+                    path="*"
+                    element={<Navigate to="/signin" replace />}
+                />
             </Routes>
-
-
         </div>
     );
 }

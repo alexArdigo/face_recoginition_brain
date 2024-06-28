@@ -3,7 +3,8 @@ import Rank from "../../components/Rank/index.tsx";
 import ImageLinkForm from "../../components/ImageLinkForm/index.tsx";
 import FaceRecognition from "../../components/FaceRecognition/index.tsx";
 import React, {ChangeEvent} from "react";
-import {CalculatedBoardingBox, Image} from "../../App.tsx";
+import {CalculatedBoardingBox, Image} from "../../types";
+
 
 type Props = {
     boxes:  CalculatedBoardingBox[]

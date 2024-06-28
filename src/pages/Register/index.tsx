@@ -1,7 +1,9 @@
 import "./style.scss";
 import {useNavigate} from "react-router-dom";
 import React, {useState} from "react";
-import {UserType} from "../../App.tsx";
+import {UserType} from "../../types";
+
+
 
 type RegisterTypes = {
     registerName: string
@@ -21,10 +23,9 @@ const Register = ({loadUser}: Props) => {
     });
 
     const onRegisterSubmit = async (event: React.MouseEvent<HTMLInputElement>) => {
-        console.log(register);
         event.preventDefault();
 
-        await fetch("http://localhost:3000/register", {
+        await fetch("https://face-recoginition-brain-backend.onrender.com/register", {
             method: "POST",
             headers: {
                 'Content-type': 'application/json'
@@ -37,14 +38,16 @@ const Register = ({loadUser}: Props) => {
         })
             .then((response) => {
                 console.log(response);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 return response.json()
             })
             .then((data) => {
                 loadUser(data)
-                console.log(data);
-                if (data.status === 200) {
+                if (data.length) {
                     console.log(data)
-                    navigate("/sign-in")
+                    navigate("/signin")
                 }
             });
     };

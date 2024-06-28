@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import "./style.scss";
 import {useNavigate} from "react-router-dom";
-import {UserType} from "../../App.tsx";
+import {UserType} from "../../types";
+import {UserContext} from "../../utils/UserContext";
 
 type SignInTypes = {
     signInEmail: string;
@@ -13,6 +14,7 @@ type Props = {
 }
 const SignIn = ({loadUser}: Props) => {
     const navigate = useNavigate();
+    const {setEmail} = useContext(UserContext)
     const [signIn, setSignIn] = useState<SignInTypes>({
         signInEmail: "",
         signInPassword: "",
@@ -20,11 +22,10 @@ const SignIn = ({loadUser}: Props) => {
 
     const onSignInSubmit = async (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
-        await fetch("http://localhost:3000/signin", {
+        await fetch("https://face-recoginition-brain-backend.onrender.com/signin", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
-
             },
             body: JSON.stringify({
                 email: signIn.signInEmail,
@@ -33,16 +34,17 @@ const SignIn = ({loadUser}: Props) => {
         })
             .then((response) => {
                 if (!response.ok) {
-                    console.log(response);
                     throw new Error('Network response was not ok');
                 }
+
                 return response.json();
             })
-            .then((data) => {
-                console.log(data[0]);
+            .then(async (data) => {
+                console.log("DATA", data.email);
                 if (data) {
-                    loadUser(data[0]);
-                    navigate("/");
+                    loadUser(data);
+                    setEmail(data.email)
+                    navigate("/home");
                 }
             });
     };

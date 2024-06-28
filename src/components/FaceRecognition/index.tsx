@@ -1,5 +1,5 @@
 import "./style.scss"
-import {CalculatedBoardingBox, Image} from "../../App.tsx";
+import {CalculatedBoardingBox, Image} from "../../types";
 import {RefObject} from "react";
 
 
@@ -10,7 +10,7 @@ type Props = {
 }
 
 const FaceRecognition = ({image, imageRef, boxes}: Props) => {
-
+    console.log(image, imageRef, boxes);
     return (
         <div className="FaceRecognition">
             <div className="absolute mt2">
